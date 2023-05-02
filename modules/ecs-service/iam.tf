@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = lower("${var.environment}-ecs-task-execution-role")
+  name = lower("${var.environment}-${var.service_name}-execution-role")
 
   assume_role_policy = <<EOF
 {
@@ -19,7 +19,7 @@ EOF
 }
 
 resource "aws_iam_role" "ecs_task_role" {
-  name = lower("${var.environment}-ecs-task-role")
+  name = lower("${var.environment}-${var.service_name}-task-role")
 
   assume_role_policy = <<EOF
 {
