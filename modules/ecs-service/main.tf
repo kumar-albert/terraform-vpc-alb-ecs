@@ -28,8 +28,7 @@ resource "aws_ecs_task_definition" "grafana_definition" {
       ],
       "cpu": 1024,
       "memory": 2048,
-      "environment": [
-      ],
+      "environment": ${jsonencode(var.container_env)},
       "ulimits": [
         {
           "name": "nofile",

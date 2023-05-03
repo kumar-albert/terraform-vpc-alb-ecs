@@ -44,3 +44,8 @@ variable "subnet_ids" {
   type        = list
 }
 
+variable "container_env" {
+  description = "service environment variables"
+  type        = any
+}
+

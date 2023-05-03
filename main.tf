@@ -4,6 +4,7 @@ locals {
   }
 
   environment = "${var.environment}"
+  db_username = "admin"
 }
 
 provider "aws" {
