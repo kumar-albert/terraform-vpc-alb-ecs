@@ -7,11 +7,10 @@ on:
 
 jobs:
   terraform:
-    if: github.event.pull_request.merged == true
-    name: 'Terraform Apply on Merge'
+    name: 'Terraform Apply on PR'
     runs-on: ubuntu-latest
     env:
-        PAT: ${{ secrets.TOKEN_GITHUB }}
+        PAT: # update personal access token here for apply comments on PR ${{ secrets.TOKEN_GITHUB }}
     defaults:
       run:
         shell: bash
@@ -19,23 +18,17 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      
+
     - name: Branch name
       id: branch
       run: echo "BRANCH=$(echo ${GITHUB_HEAD_REF##*/})" >> $GITHUB_ENV}
 
     - name: Configure AWS Credentials - US-DEV
+      if: ${{ steps.branch.outputs }} == 'us-dev'
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-west-2
-
-    - name: Install SSH Key
-      uses: shimataro/ssh-key-action@v2.3.1
-      with:
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        known_hosts: github.com
+        aws-access-key-id: #Update aws credentials for terraform ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: #Update aws credentials for terraform ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - name: Setup Terragrunt
       uses: autero1/action-terragrunt@v1.1.1
