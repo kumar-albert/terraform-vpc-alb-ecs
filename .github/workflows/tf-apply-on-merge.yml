@@ -1,0 +1,69 @@
+name: 'Terraform Apply on Merge'
+
+on:
+  pull_request:
+    types: [closed]
+    
+
+jobs:
+  terraform:
+    if: github.event.pull_request.merged == true
+    name: 'Terraform Apply on Merge'
+    runs-on: ubuntu-latest
+    env:
+        PAT: ${{ secrets.TOKEN_GITHUB }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Branch name
+      id: branch
+      run: echo "BRANCH=$(echo ${GITHUB_HEAD_REF##*/})" >> $GITHUB_ENV}
+
+    - name: Configure AWS Credentials - US-DEV
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
+    - name: Install SSH Key
+      uses: shimataro/ssh-key-action@v2.3.1
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: github.com
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.1
+      with:
+        terragrunt_version: latest
+
+    - name: Terragrunt Version
+      run: terragrunt --version
+ 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      
+    - name: Terraform Init
+      run: terragrunt run-all init
+      
+    - name: Terraform Plan
+      id: plan
+      run: terragrunt run-all plan
+
+    - name: Post Plan
+      uses: robburger/terraform-pr-commenter@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+      with:
+        commenter_type: plan
+        commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
+        commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
+
+    - name: Terraform Apply
+      id: apply
+      run: terragrunt run-all apply --terragrunt-non-interactive

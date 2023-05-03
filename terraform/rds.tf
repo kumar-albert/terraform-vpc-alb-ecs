@@ -53,12 +53,12 @@ resource "aws_db_instance" "main" {
   db_subnet_group_name            = aws_db_subnet_group.db_private_subnet_group.name
   deletion_protection             = false
   copy_tags_to_snapshot           = true
-  enabled_cloudwatch_logs_exports = ["audit","error","general","slowquery"]
+  enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
   maintenance_window              = "Mon:00:00-Mon:03:00"
   backup_window                   = "03:00-06:00"
   backup_retention_period         = 7
   storage_encrypted               = false
-  tags = local.common_tags
+  tags                            = local.common_tags
 }
 
 resource "aws_security_group" "db_access" {

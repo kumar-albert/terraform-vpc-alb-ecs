@@ -1,9 +1,9 @@
 resource "aws_lb" "lb" {
-  name               = "${var.environment}-lb"
-  subnets            = [for subnet in aws_subnet.public_subnet : subnet.id]
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.lb_sg.id]
-  internal           = false
+  name                       = "${var.environment}-lb"
+  subnets                    = [for subnet in aws_subnet.public_subnet : subnet.id]
+  load_balancer_type         = "application"
+  security_groups            = [aws_security_group.lb_sg.id]
+  internal                   = false
   drop_invalid_header_fields = true
 
   tags = local.common_tags

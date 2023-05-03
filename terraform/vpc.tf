@@ -28,7 +28,7 @@ resource "aws_nat_gateway" "ngw" {
 resource "aws_subnet" "public_subnet" {
   count                   = length(data.aws_availability_zones.available.names)
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "${cidrsubnet(var.vpc_cidr, 8, count.index)}"
+  cidr_block              = cidrsubnet(var.vpc_cidr, 8, count.index)
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "public_subnet" {
 resource "aws_subnet" "private_subnet" {
   count             = length(data.aws_availability_zones.available.names)
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "${cidrsubnet(var.vpc_cidr, 8, sum([length(data.aws_availability_zones.available.names), count.index]))}"
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, sum([length(data.aws_availability_zones.available.names), count.index]))
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = merge(tomap({ "Name" = "${local.environment}-private-subnet-${count.index}" }), local.common_tags)
